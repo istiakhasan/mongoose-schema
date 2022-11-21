@@ -6,7 +6,7 @@ const app = require("./app");
 
 
 
-// mongose connection 
+//==================================================== mongose connection ===============================================================
 mongoose.connect('mongodb://localhost:27017/acc-inventory').then(()=>console.log("Database connection successfully..."))
 // server
 const port = process.env.PORT || 8080;

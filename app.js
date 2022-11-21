@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 
 app.use(express.json());
 app.use(cors());
+// ======================================================================create schema==============================================
 const productSchema = mongoose.Schema(
   {
     name: {
@@ -80,21 +81,40 @@ const productSchema = mongoose.Schema(
   }
 );
 
+// ==============================================middleweare================================================================//
+
+// Mongoose middleware for saving data =pre/post
+productSchema.pre('save',function(next){
+  if(this.quantity===0){
+    this.status='out-of-stock'
+  }
+  next()
+})
+productSchema.post('save',function(doc,next){
+  console.log("After saving data ")
+  next()
+})
+//============================================================================================================================//
+//==============================================inject custom method==========================================================//
+productSchema.methods.logger=function(){
+ console.log(`Data save for ${this.name}`)
+}
+//============================================================================================================================//
 //Schema->Model->Query
 
 // create model using mongoose
-
+//================================================create model================================================================//
 const Product = mongoose.model("Product", productSchema);
-
+// ================================================route setup ===============================================================//
 app.get("/", (req, res) => {
   res.send("Route is working! YaY!");
 });
 app.post("/api/v1/product", async (req, res, next) => {
   try {
     const product = new Product(req.body);
-    if(product.quantity===0){
-      product.status='out-of-stock'
-    }
+    // if(product.quantity===0){
+    //   product.status='out-of-stock'
+    // }
     const result = await product.save();
     // const result=await Product.create(req.body)
     res.status(200).json({
@@ -102,6 +122,7 @@ app.post("/api/v1/product", async (req, res, next) => {
       message: "Data inserted successfylly",
       data: result,
     });
+    result.logger()
   } catch (error) {
     res.status(400).json({
       status: "Failed",
