@@ -21,6 +21,10 @@ module.exports.getProduct = async (req, res, next) => {
     //   .gt(5).lt(600).limit(2).sort({quantity:-1});
     //   const products=await Product.findById("637afe70141eb15180c912f6")
     // const products = await Product.findOne({ name: "Test2" });
+    console.log(req.query,"query parameter")
+    if(req.query.sort){
+      console.log(req.query.sort.split(","))
+    }
     const products = await getProductService();
     res.status(200).json({
       status: "success",
