@@ -1,8 +1,13 @@
 const mongoose=require('mongoose')
 const validator=require('validator')
 const {ObjectId}=mongoose.Schema.Types
-const productSchema = mongoose.Schema(
+const stockSchema = mongoose.Schema(
     {
+      productId:{
+          type:ObjectId,
+          required:true,
+          ref:'Product'
+      },  
       name: {
         type: String,
         require: [true, "Please provide a name for this product "],
@@ -16,11 +21,7 @@ const productSchema = mongoose.Schema(
         type: String,
         required: true,
       },
-      // price: {
-      //   type: Number,
-      //   required: true,
-      //   min: [0, "price can't be negative"],
-      // },
+     
       unit: {
         type: String,
         required: true,
@@ -48,6 +49,16 @@ const productSchema = mongoose.Schema(
           message:"Please provide a valid image url"
         }
       }],
+      price:{
+        type:Number,
+        required:true,
+        min:[0,"Product price can't be negative"]
+      },
+      quantity:{
+        type:Number,
+        required:true,
+        min:[0,"Product quantity can't be negative"]
+      },
       category:{
         type:String,
         required:true
@@ -62,49 +73,47 @@ const productSchema = mongoose.Schema(
           ref:"Brand",
           required:true
         }
+      },
+      status:{
+        type:String,
+        required:true,
+        enum:{
+            values:['in-stock',"out-of-stock","discontinue"],
+            message:"Status can't be {VALUE} "
+        }
+      },
+      store:{
+        name:{
+            type:String,
+            trim:true,
+            required:[true,"Please provide a brand name "],
+            mixLength:100,
+            enum:{
+                values:["dhaka","chattogram","rajshahi","sylet","khulna","borishal","rongpur","mymensing"],
+                message:"{VALUE} is not a valid name "
+            },
+            lowercase:true
+        },
+        id:{
+            type:ObjectId,
+            required:true,
+            ref:'Store'
+        }
+      },
+      suppliedBy:{
+        name:{
+            type:String,
+            trim:true,
+            required:[true,"Please provide a supplier  name "],
+            mixLength:100,
+            
+        },
+        id:{
+            type:ObjectId,
+            ref:"Supplier"
+        }
       }
-      // quantity: {
-      //   type: Number,
-      //   required: true,
-      //   min: [0, "Quantity can't be negative"],
-      //   validator: (values) => {
-      //     const isInteger = Number.isInteger(values);
-      //     if (isInteger) {
-      //       return true;
-      //     } else {
-      //       return false;
-      //     }
-      //   },
-      //   message: "Quantity must be an integer ",
-      // },
-      // status: {
-      //   type: String,
-      //   required: true,
-      //   enum: {
-      //     values: ["in-stock", "out-of-stock", "discontainued"],
-      //     message: "Status can't be {VALUE}",
-      //   },
-      // },
-      // createDAT:{
-      //   type: Date,
-      //   default:Date.now
-      // },
-      // updateDAT:{
-      //   type:Date,
-      //   default:Date.now
-      // }
-  
-      // supplier:{
-      //   type:mongoose.Schema.Types.ObjectId,
-      //   ref:"Spplier" //reference collection or model
-      // },
-      // categories:[{
-      //   name:{
-      //     type:String,
-      //     required:true
-      //   },
-      //   _id:mongoose.Schema.Types.ObjectId
-      // }]
+     
     },
     {
       timestamps: true,
@@ -134,7 +143,7 @@ const productSchema = mongoose.Schema(
   
   // create model using mongoose
   //================================================create model================================================================//
-  const Product = mongoose.model("Product", productSchema);
+  const Stock = mongoose.model("Stock", stockSchema);
 
 
-  module.exports=Product
+  module.exports=Stock
