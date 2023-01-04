@@ -1,3 +1,4 @@
+const Brand = require("../models/Brand");
 const Product = require("../models/Product.model");
 
 module.exports.getProductService = async () => {
@@ -7,7 +8,10 @@ module.exports.getProductService = async () => {
 
 module.exports.createProductSerice = async (data) => {
   const product = new Product(data);
-
+  console.log(product,"product log")
+  const {_id:productsId,brand}=product
+  const res=await Brand.updateOne({_id:brand.id},{$push:{products:productsId}})
+  console.log(res,"add product with brand")
   const result = await product.save();
   return result;
 };
